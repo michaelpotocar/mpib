@@ -7,14 +7,24 @@ ip = f.read()
 f = open("ignore/port", "r")
 port = int(f.read())
 
-ib.connect(ip, 4001, clientId=1)
+ib.connect(ip, port, clientId=1)
 
-contract = Stock('AMD', 'SMART', 'USD')
+msft_option_contract = Option('MSFT', '20230721', 350, 'C', 'SMART')
+ib.qualifyContracts(msft_option_contract)
+# details = ib.reqContractDetails(msft_option_contract)
+msft_option_order = MarketOrder('BUY', 1)
+msft_option_trade = ib.placeOrder(msft_option_contract, msft_option_order)
 
-bars = ib.reqHistoricalData(
-    contract, endDateTime='', durationStr='30 D',
-    barSizeSetting='1 hour', whatToShow='MIDPOINT', useRTH=True)
+msft = Stock('MSFT', 'SMART', 'USD')
+ib.qualifyContracts(msft)
+chains = ib.reqSecDefOptParams(msft.symbol, '', msft.secType, msft.conId)
 
-# convert to pandas dataframe:
-df = util.df (bars)
-print(df)
+time.sleep(0)
+# bars = ib.reqHistoricalData(
+#     msft_option_contract, endDateTime='', durationStr='1 D',
+#     barSizeSetting='1 hour', whatToShow='MIDPOINT', useRTH=True)
+
+# df = util.df (bars)
+# print(df)
+
+ib.disconnect()
